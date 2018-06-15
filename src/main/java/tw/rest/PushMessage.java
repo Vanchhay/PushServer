@@ -5,7 +5,7 @@ import java.time.Instant;
 public class PushMessage {
 
 	String sender, topic, text;
-	Boolean urgent;
+	boolean urgent;
 	Instant sendTime;
 
 	PushMessage(){
@@ -41,7 +41,7 @@ public class PushMessage {
 		return this.text;
 	}
 
-	public Boolean getUrgent(){
+	public boolean getUrgent(){
 		return this.urgent;
 	}
 
