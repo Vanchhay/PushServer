@@ -29,18 +29,21 @@
     </repositories>
 
     <dependencies>
+
         <!--resteasy-->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>3.5.1.Final</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>3.5.1.Final</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson-provider -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -55,12 +58,14 @@
             <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
-        <!-- httpcomponents -->
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.1.1</version>
+            <version>4.5.5</version>
         </dependency>
+
     </dependencies>
 
 </project>
