@@ -25,7 +25,7 @@ public class PushMessage {
 		this.text = text;
 	}
 
-	public void setUrgent(Boolean urgent) {
+	public void setUrgent(boolean urgent) {
 		this.urgent = urgent;
 	}
 

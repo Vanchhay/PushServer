@@ -20,16 +20,38 @@ import javax.ws.rs.core.Response;
 @Path("/pushmessage")
 public class PushMessageRestService {
 
-	private final static String TOPIC = "kafka_topic";
+	private final static String TOPIC = "kafkaTopic";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
+	private final Properties DEFAULT_PROPS = setDefaultProps(BOOTSTRAP_SERVERS);
+
+	private Producer<Long, String> producer = setProducer();
+
+	public Producer<Long, String> setProducer(){
+		return new KafkaProducer<Long, String>(DEFAULT_PROPS);
+	}
+
+	public Properties setDefaultProps(String bootstrapServer, String clientID) {
+		Properties props = new Properties();
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+		props.put(ProducerConfig.CLIENT_ID_CONFIG, clientID);
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		return props;
+	}
+
+	public Properties setDefaultProps(String bootstrapServer) {
+		Properties props = new Properties();
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		return props;
+	}
 
 	@GET
 	@Produces("application/json")
 	@Consumes("application/json")
 	public PushMessage getPushMessageDetail() {
-
 		PushMessage pushMessage = new PushMessage();
-
 		return pushMessage;
 	}
 
@@ -38,38 +60,26 @@ public class PushMessageRestService {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
-		runProducer(pm);
-		return Response.ok(pm).build();
+		// Add PushMessage to Producer
+		producer.send(new ProducerRecord<>(TOPIC, pm.topic),(metadata, exception)->{
+			System.out.println("Metadata => "+metadata.topic());
+		});
+		return Response.ok().build();
 	}
 
-	private static Producer<Long, String> createProducer() {
-		Properties props = new Properties();
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-		props.put(ProducerConfig.CLIENT_ID_CONFIG, "client.id");
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		return new KafkaProducer<>(props);
-	}
-
-	static void runProducer(PushMessage pm) {
-		final Producer<Long, String> producer = createProducer();
-		try {
-			final ProducerRecord<Long, String> record = new ProducerRecord<>(TOPIC, pm.sender);
-			producer.send(record, (metadata, exception) -> {
-				if (metadata != null) {
-					System.out.printf("sent record(key=%s value=%s) " +
-									"meta(partition=%d, offset=%d) \n",
-							record.key(), record.value(), metadata.partition(),
-							metadata.offset());
-				} else {
-					exception.printStackTrace();
-				}
-			});
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally {
-			producer.flush();
-			producer.close();
-		}
-	}
+	/**
+	 * Stream passing PushMessage object to Kafka
+	 **/
+//	boolean runProducer(PushMessage pm) {
+//		try {
+//			producer.send(new ProducerRecord<>(TOPIC, pm.text));
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return false;
+//		}finally {
+//			producer.flush();
+//			producer.close();
+//		}
+//		return true;
+//	}
 }
