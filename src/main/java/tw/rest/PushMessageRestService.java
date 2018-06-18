@@ -6,6 +6,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -22,29 +24,20 @@ public class PushMessageRestService {
 
 	private final static String TOPIC = "kafkaTopic";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
-	private final Properties DEFAULT_PROPS = setDefaultProps(BOOTSTRAP_SERVERS);
+	private Logger LOGGER = null;
+	private Producer<Long, String> producer = null;
 
-	private Producer<Long, String> producer = setProducer();
-
-	public Producer<Long, String> setProducer(){
-		return new KafkaProducer<Long, String>(DEFAULT_PROPS);
-	}
-
-	public Properties setDefaultProps(String bootstrapServer, String clientID) {
+	public PushMessageRestService(){
+		// Build LOGGER
+		LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);
+		LOGGER.info("===========   PushMessage CONSTRUCTOR  ================");
 		Properties props = new Properties();
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-		props.put(ProducerConfig.CLIENT_ID_CONFIG, clientID);
+
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		return props;
-	}
-
-	public Properties setDefaultProps(String bootstrapServer) {
-		Properties props = new Properties();
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		return props;
+		LOGGER.info("===========   Creating Producer  ================");
+		producer = new KafkaProducer<>(props);
 	}
 
 	@GET
@@ -61,25 +54,21 @@ public class PushMessageRestService {
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
 		// Add PushMessage to Producer
+		LOGGER.info("===========   Sending message to consumer  ================");
 		producer.send(new ProducerRecord<>(TOPIC, pm.topic),(metadata, exception)->{
 			System.out.println("Metadata => "+metadata.topic());
 		});
+		LOGGER.info("===========   Message Sent  ================");
+
+		LOGGER.info("===========   Producer Info  ================");
+		LOGGER.info("Producer : {}", producer);
+		LOGGER.info("===========   End Producer Info  ================");
+
+		LOGGER.info("===========   PushMessage Info  ================");
+		LOGGER.info("Topic : {} , Sender: {} , Urgent: {} , Text: {}", pm.topic, pm.sender, pm.urgent, pm.text );
+		LOGGER.info("===========   End PushMessage Info  ================");
+		// close the producer
+		producer.close();
 		return Response.ok().build();
 	}
-
-	/**
-	 * Stream passing PushMessage object to Kafka
-	 **/
-//	boolean runProducer(PushMessage pm) {
-//		try {
-//			producer.send(new ProducerRecord<>(TOPIC, pm.text));
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			return false;
-//		}finally {
-//			producer.flush();
-//			producer.close();
-//		}
-//		return true;
-//	}
 }
