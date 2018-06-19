@@ -24,20 +24,19 @@ public class PushMessageRestService {
 
 	private final static String TOPIC = "kafkaTopic";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
-	private Logger LOGGER = null;
-	private Producer<Long, String> producer = null;
+	private static Logger LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);;
+	private static Properties props = setProps();
 
-	public PushMessageRestService(){
-		// Build LOGGER
-		LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);
-		LOGGER.info("===========   PushMessage CONSTRUCTOR  ================");
-		Properties props = new Properties();
+	private static Producer<Long, String> producer = new KafkaProducer<>(props);
 
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+	static Properties setProps(){
+		LOGGER.info("===========   SetProps Execution  ================");
+		Properties properties = new Properties();
+		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		LOGGER.info("===========   Creating Producer  ================");
-		producer = new KafkaProducer<>(props);
+		return properties;
 	}
 
 	@GET
@@ -49,7 +48,7 @@ public class PushMessageRestService {
 	}
 
 	@POST
-	@Path("post")
+	@Path("/post")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
@@ -61,14 +60,14 @@ public class PushMessageRestService {
 		LOGGER.info("===========   Message Sent  ================");
 
 		LOGGER.info("===========   Producer Info  ================");
-		LOGGER.info("Producer : {}", producer);
+		LOGGER.info("Server and Port : {}", props.getProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
 		LOGGER.info("===========   End Producer Info  ================");
 
 		LOGGER.info("===========   PushMessage Info  ================");
 		LOGGER.info("Topic : {} , Sender: {} , Urgent: {} , Text: {}", pm.topic, pm.sender, pm.urgent, pm.text );
 		LOGGER.info("===========   End PushMessage Info  ================");
 		// close the producer
-		producer.close();
+//		producer.close();
 		return Response.ok().build();
 	}
 }
