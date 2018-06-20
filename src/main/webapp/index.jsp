@@ -1,1 +1,0 @@
-<<a href="/hello"> Go to Hello URL</a>

@@ -12,22 +12,21 @@
         <param-value>/</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>resteasy.resources</param-name>
-        <param-value>tw.rest.PushMessageRestService</param-value>
-    </context-param>
-
     <servlet>
         <servlet-name>resteasy-servlet</servlet-name>
         <servlet-class>
             org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
         </servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>tw.app.PushMessageApplication</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>resteasy-servlet</servlet-name>
         <!--Prefix for endpoint-->
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/pushmessage/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

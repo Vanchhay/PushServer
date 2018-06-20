@@ -16,23 +16,24 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.GET;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
 
 @Path("/pushmessage")
-public class PushMessageRestService {
+public class PushMessageRestService extends Application {
 
 	private final static String TOPIC = "kafkaTopic";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
-	private static Logger LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);;
-	private static Properties props = setProps();
+	private final static Logger LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);
+	private Properties props = setProps();
+	private Producer<Long, String> producer = new KafkaProducer<>(props);
 
-	private static Producer<Long, String> producer = new KafkaProducer<>(props);
-
-	static Properties setProps(){
+	Properties setProps(){
 		LOGGER.info("===========   SetProps Execution  ================");
 		Properties properties = new Properties();
 		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+		properties.put(ProducerConfig.CLIENT_ID_CONFIG, "TRADE WORK");
 		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
 		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		LOGGER.info("===========   Creating Producer  ================");
@@ -61,13 +62,12 @@ public class PushMessageRestService {
 
 		LOGGER.info("===========   Producer Info  ================");
 		LOGGER.info("Server and Port : {}", props.getProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
+		LOGGER.info("Client ID : {}", props.getProperty(ProducerConfig.CLIENT_ID_CONFIG));
 		LOGGER.info("===========   End Producer Info  ================");
 
 		LOGGER.info("===========   PushMessage Info  ================");
 		LOGGER.info("Topic : {} , Sender: {} , Urgent: {} , Text: {}", pm.topic, pm.sender, pm.urgent, pm.text );
 		LOGGER.info("===========   End PushMessage Info  ================");
-		// close the producer
-//		producer.close();
 		return Response.ok().build();
 	}
 }
