@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 
 
 @Path("/pushmessage")
-public class PushMessageRestService extends Application {
+public class PushMessageRestService {
 
 	private final static String TOPIC = "kafkaTopic";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
