@@ -8,11 +8,6 @@ public class PushMessage {
 	boolean urgent;
 	Instant sendTime;
 
-	PushMessage(){
-		Instant now = Instant.now();
-		this.sendTime = now;
-	}
-
 	public void setSender (String sender) {
 		this.sender = sender;
 	}
@@ -27,6 +22,10 @@ public class PushMessage {
 
 	public void setUrgent(boolean urgent) {
 		this.urgent = urgent;
+	}
+
+	public void setSendTime(Instant sendTime){
+		this.sendTime = sendTime;
 	}
 
 	public String getSender(){
