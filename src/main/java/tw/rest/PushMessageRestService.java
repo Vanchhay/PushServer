@@ -1,5 +1,8 @@
 package tw.rest;
 
+import com.google.gson.Gson;
+
+import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -69,11 +72,15 @@ public class PushMessageRestService {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
+
+		Gson gson = new Gson();
+		String pmJsonString = gson.toJson(pm);
+
 		// Add PushMessage to Producer
 		LOGGER.info("===========   Sending message to consumer  ================");
-		producer.send(new ProducerRecord<>(TOPIC, pm.topic),(metadata, exception)->{
-			exception.printStackTrace();
-		});
+		LOGGER.info("===========   pmJsonString : {} ", pmJsonString);
+		ProducerRecord record = new ProducerRecord(TOPIC, pmJsonString);
+		producer.send(record);
 		LOGGER.info("===========   Message Sent  ================");
 
 		LOGGER.info("===========   PushMessage Info  ================");
