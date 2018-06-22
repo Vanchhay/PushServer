@@ -16,14 +16,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.GET;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 
 
 @Path("/pushmessage")
 public class PushMessageRestService {
 
-	private final static String TOPIC = "kafkaTopic";
+	private final static String TOPIC = "distributor";
 	private final static String BOOTSTRAP_SERVERS = "localhost:9092";
 	private final static Logger LOGGER = LoggerFactory.getLogger(PushMessageRestService.class);
 	private Properties props = setProps();
