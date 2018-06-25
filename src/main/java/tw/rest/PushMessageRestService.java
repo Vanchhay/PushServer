@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Properties;
 
 import javax.ws.rs.Path;
@@ -72,6 +73,9 @@ public class PushMessageRestService {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
+
+		// Set time of the request
+		pm.setSendTime(Instant.now());
 
 		Gson gson = new Gson();
 		String pmJsonString = gson.toJson(pm);
