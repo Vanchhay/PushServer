@@ -34,7 +34,7 @@ public class PushMessageRestService {
 	private static String TOPIC;
 	private static InputStream inputStream;
 	private static Producer<Long, String> producer;
-
+	private static Gson gson = new Gson();
 	static {
 		try {
 			Properties properties = new Properties();
@@ -76,10 +76,7 @@ public class PushMessageRestService {
 		// Set time of the request
 		pm.setSendTime(Instant.now());
 
-		Gson gson = new Gson();
-		String pmJsonString = gson.toJson(pm);
-
-		ProducerRecord record = new ProducerRecord(TOPIC, pmJsonString);
+		ProducerRecord record = new ProducerRecord(TOPIC, gson.toJson(pm));
 		producer.send(record);
 		LOGGER.info("RECORD SENT : {} ", record);
 		return Response.ok(pm).build();
