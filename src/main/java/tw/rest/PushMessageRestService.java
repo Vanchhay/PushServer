@@ -74,11 +74,16 @@ public class PushMessageRestService {
 	public Response addPushMessage(PushMessage pm) {
 
 		// Set time of the request
-		pm.setSendTime(Instant.now());
-
+//		pm.setSendTime(Instant.now());
+//
 		ProducerRecord record = new ProducerRecord(TOPIC, gson.toJson(pm));
 		producer.send(record);
-		LOGGER.info("RECORD SENT : {} ", record);
+
+		for(int i=0;i<5;i++)
+		{
+			LOGGER.info("RECORD SENT : {} ", pm.getSender());
+		}
+
 		return Response.ok(pm).build();
 	}
 }
