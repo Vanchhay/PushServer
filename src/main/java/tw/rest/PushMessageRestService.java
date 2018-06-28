@@ -24,6 +24,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Response;
 
+import java.util.concurrent.TimeUnit;
+
+
 
 @Path("/pushmessage")
 public class PushMessageRestService {
@@ -73,17 +76,18 @@ public class PushMessageRestService {
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
 
-		// Set time of the request
-//		pm.setSendTime(Instant.now());
-//
-		ProducerRecord record = new ProducerRecord(TOPIC, gson.toJson(pm));
-		producer.send(record);
-
-		for(int i=0;i<5;i++)
-		{
-			LOGGER.info("RECORD SENT : {} ", pm.getSender());
+		LOGGER.info("Request : {} at {}", pm.getSender() , pm.getSendTime());
+		try {
+			TimeUnit.SECONDS.sleep(5);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
+		// Set time of the request
+		pm.setSendTime(Instant.now());
+		LOGGER.info("Request : {} at {}", pm.getSender() , pm.getSendTime());
+
+		LOGGER.info("Response to user {}  ", pm.getSender());
 		return Response.ok(pm).build();
 	}
 }
