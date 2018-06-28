@@ -78,7 +78,7 @@ public class PushMessageRestService {
 
 		LOGGER.info("Request : {} at {}", pm.getSender() , pm.getSendTime());
 		try {
-			TimeUnit.SECONDS.sleep(5);
+			TimeUnit.SECONDS.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
