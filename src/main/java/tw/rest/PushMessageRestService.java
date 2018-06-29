@@ -24,9 +24,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Response;
 
-import java.util.concurrent.TimeUnit;
-
-
+import java.util.Random;
 
 @Path("/pushmessage")
 public class PushMessageRestService {
@@ -38,6 +36,7 @@ public class PushMessageRestService {
 	private static InputStream inputStream;
 	private static Producer<Long, String> producer;
 	private static Gson gson = new Gson();
+	private static Random random = new Random();
 	static {
 		try {
 			Properties properties = new Properties();
@@ -76,18 +75,16 @@ public class PushMessageRestService {
 	@Consumes("application/json")
 	public Response addPushMessage(PushMessage pm) {
 
-		LOGGER.info("Request : {} at {}", pm.getSender() , pm.getSendTime());
-		try {
-			TimeUnit.SECONDS.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
+		String[] topics = {"topic1","topic2","topic3","topic4","topic5","topic6","topic7","topic8","topic9","topic10"};
+		short topicIndex = (short)random.nextInt(10);
+		pm.setTopic(topics[topicIndex]);
 		// Set time of the request
 		pm.setSendTime(Instant.now());
-		LOGGER.info("Request : {} at {}", pm.getSender() , pm.getSendTime());
 
-		LOGGER.info("Response to user {}  ", pm.getSender());
+		ProducerRecord record = new ProducerRecord(topics[topicIndex], gson.toJson(pm));
+		producer.send(record);
+
+		LOGGER.info("Response to user {} -- {} ", pm.getSender(), pm.getTopic());
 		return Response.ok(pm).build();
 	}
 }
